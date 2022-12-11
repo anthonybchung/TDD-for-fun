@@ -36,17 +36,17 @@ const Login = () => {
   const handlerSubmit = async (event) => {
     event.preventDefault();
     try {
-      console.log("!!!!!!! click");
       const response = await axios.post(
         LOGIN_URL,
         JSON.stringify({ userName: user.userName, password: user.password }),
         publicHeaders
       );
+      console.log("response********************************************");
+      console.log("response");
       console.log(response);
     } catch (err) {
-      console.log("************************");
       console.log(err);
-      console.log("*******");
+      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       console.log(err.response?.status);
       if (err.response?.status === 404) {
         setAlertMessage("Server not connected (status: 404)");
@@ -54,6 +54,11 @@ const Login = () => {
       }
       if (err.message === "Network Error") {
         setAlertMessage(err.message);
+        setIsAlertDisabled(false);
+      }
+
+      if (err.response?.status === 401) {
+        setAlertMessage("No Authorised");
         setIsAlertDisabled(false);
       }
     }
@@ -84,9 +89,7 @@ const Login = () => {
       >
         Login
       </Button>
-      {!isAlertDisabled && (
-        <Alert severity="error">This is an error alert — check it out!</Alert>
-      )}
+      {!isAlertDisabled && <Alert severity="error">{alertMessage}</Alert>}
     </div>
   );
 };
