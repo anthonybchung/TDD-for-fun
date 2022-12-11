@@ -1,4 +1,4 @@
-import { screen, render, fireEvent, act } from "@testing-library/react";
+import { screen, render, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Login from "./Login.component";
 
@@ -63,12 +63,25 @@ describe("api functionality", () => {
     const userNameInput = screen.getByPlaceholderText("User Name");
     const passwordInput = screen.getByPlaceholderText("Password");
 
-    fireEvent.change(userNameInput, { target: { value: "abchung" } });
+    fireEvent.change(userNameInput, { target: { value: "abchung1" } });
     fireEvent.change(passwordInput, { target: { value: "123456" } });
-    const loginButton = screen.getByRole("button");
+    const loginButton = screen.getByRole("button", /login/i);
     await fireEvent.click(loginButton, { name: /login/i });
 
     const alertmessage = await screen.findByRole("alert");
-    expect(alertmessage).toBeInTheDocument();
+    expect(alertmessage).toHaveTextContent("Invalid Credentials");
+  });
+
+  it("should return a 200 and alertmessage should not appear when correct credentials are entered", async () => {
+    render(<Login />);
+    const userNameInput = screen.getByPlaceholderText("User Name");
+    const passwordInput = screen.getByPlaceholderText("Password");
+
+    fireEvent.change(userNameInput, { target: { value: "abchung" } });
+    fireEvent.change(passwordInput, { target: { value: "123456" } });
+    const loginButton = screen.getByRole("button", /login/i);
+    await fireEvent.click(loginButton, { name: /login/i });
+    const alertmessage = await screen.findByRole("alert");
+    expect(alertmessage).toBeNull();
   });
 });

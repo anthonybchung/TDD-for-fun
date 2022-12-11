@@ -1,4 +1,4 @@
-import { Button, Alert, Input } from "@mui/material";
+import { Button, Alert, Input, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import "./Login.styles.css";
 import axios from "../../config/api";
@@ -41,24 +41,14 @@ const Login = () => {
         JSON.stringify({ userName: user.userName, password: user.password }),
         publicHeaders
       );
-      console.log("response********************************************");
-      console.log("response");
-      console.log(response);
     } catch (err) {
-      console.log(err);
-      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-      console.log(err.response?.status);
-      if (err.response?.status === 404) {
-        setAlertMessage("Server not connected (status: 404)");
-        setIsAlertDisabled(false);
-      }
       if (err.message === "Network Error") {
         setAlertMessage(err.message);
         setIsAlertDisabled(false);
       }
-
+      console.log(err);
       if (err.response?.status === 401) {
-        setAlertMessage("No Authorised");
+        setAlertMessage(err.response.data.error);
         setIsAlertDisabled(false);
       }
     }
@@ -89,7 +79,18 @@ const Login = () => {
       >
         Login
       </Button>
-      {!isAlertDisabled && <Alert severity="error">{alertMessage}</Alert>}
+      {!isAlertDisabled && (
+        <Stack sx={{ width: "100%", mt: 2 }} spacing={2}>
+          <Alert
+            severity="error"
+            onClose={() => {
+              setIsAlertDisabled(true);
+            }}
+          >
+            {alertMessage}
+          </Alert>
+        </Stack>
+      )}
     </div>
   );
 };
